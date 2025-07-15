@@ -186,13 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
+                // Usar el sigla sin espacios para el ID del checkbox para evitar problemas con IDs HTML
+                const checkboxId = `check-${ramo.sigla.replace(/\s/g, '')}`;
+
                 ramoDiv.innerHTML = `
                     <h4>${ramo.nombre}</h4>
                     <p><span class="sigla">${ramo.sigla}</span> | <span class="creditos">${ramo.creditos} Créditos</span></p>
                     ${prerrequisitosHtml}
                     <div class="checkbox-container">
-                        <input type="checkbox" id="check-${ramo.sigla.replace(/\s/g, '')}" ${isApproved ? 'checked' : ''} ${isBlocked && !isApproved ? 'disabled' : ''}>
-                        <label for="check-${ramo.sigla.replace(/\s/g, '')}">Aprobado</label>
+                        <input type="checkbox" id="${checkboxId}" ${isApproved ? 'checked' : ''} ${isBlocked && !isApproved ? 'disabled' : ''}>
+                        <label for="${checkboxId}">Aprobado</label>
                     </div>
                 `;
 
@@ -209,8 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function addEventListeners() {
         document.querySelectorAll('.ramo .checkbox-container input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', (event) => {
-                // Obtener la sigla del ramo desde el ID del checkbox (eliminando espacios)
-                const sigla = event.target.id.replace('check-', '').replace(/\s/g, ' ');
+                // Obtener la sigla del ramo desde el atributo data-sigla del elemento padre (ramoDiv)
+                const ramoDiv = event.target.closest('.ramo');
+                const sigla = ramoDiv.dataset.sigla;
+
                 if (event.target.checked) {
                     ramosAprobados.add(sigla);
                 } else {
